@@ -55,8 +55,8 @@ public class Job {
         case Salary(UInt)
     }
     
-    private var title: String
-    private var type: JobType
+    var title: String
+    var type: JobType
     
     init(title: String, type: JobType) {
         self.title = title
@@ -104,13 +104,80 @@ public class Job {
 // Person
 //
 public class Person {
+    var firstName: String
+    var lastName: String
+    var age: Int
+    var _job: Job?
+    var _spouse: Person?
     
+    var job : Job? {
+        get {return self._job}
+        set (value) {
+            if age > 15 {
+                self._job = value
+            } else {
+                self._job = nil
+            }
+        }
+    }
     
+    var spouse: Person? {
+        get {return self._spouse}
+        set(value) {
+            if self.age > 18 {
+                self._spouse = value
+            } else {
+                self._spouse = nil
+            }
+        }
+    }
+    
+    init(firstName: String, lastName: String, age: Int) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.age = age
+    }
+
+    func toString() -> String {
+        let job: String = _job?.title ?? "nil"
+        let spouse: String = _spouse?.firstName ?? "nil"
+        let personClass = "[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(job) spouse:\(spouse)]"
+        return personClass
+    }
 }
 
 ////////////////////////////////////
 // Family
 //
 public class Family {
+    var members : [Person] = []
+
+    init(spouse1: Person, spouse2: Person) {
+        if spouse1.spouse == nil && spouse2.spouse == nil {
+            spouse1.spouse = spouse2
+            spouse2.spouse = spouse1
+            members.append(spouse1)
+            members.append(spouse2)
+        }
+    }
+
+    func haveChild(_ kid: Person) -> Bool {
+        if members[0].age > 21 || members[1].age > 21 {
+            members.append(kid)
+            return true
+        }
+        return false
+    }
+
+    func householdIncome() -> Int {
+        var famIncome = 0
+        for person in members{
+            let work = person.job
+            if (work !== nil) {
+            famIncome += work!.calculateIncome(2000)
+            }
+        }
+        return famIncome
+    }
 }
 
